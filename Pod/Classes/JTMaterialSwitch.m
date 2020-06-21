@@ -49,11 +49,7 @@
 @end
 
 @implementation JTMaterialSwitch {
-  //float thumbOnPosition;
-  //float thumbOffPosition;
-  //float bounceOffset;
   JTMaterialSwitchStyle thumbStyle;
-  //CAShapeLayer *rippleLayer;
 }
 
 // the easiest initializing way
