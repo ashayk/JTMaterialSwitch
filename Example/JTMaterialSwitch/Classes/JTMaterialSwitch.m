@@ -38,12 +38,22 @@
 
 @end
 
+@interface JTMaterialSwitch() {
+    
+}
+@property float thumbOnPosition;
+@property float thumbOffPosition;
+@property float bounceOffset;
+@property CAShapeLayer *rippleLayer;
+
+@end
+
 @implementation JTMaterialSwitch {
-  float thumbOnPosition;
-  float thumbOffPosition;
-  float bounceOffset;
+  //float thumbOnPosition;
+  //float thumbOffPosition;
+  //float bounceOffset;
   JTMaterialSwitchStyle thumbStyle;
-  CAShapeLayer *rippleLayer;
+  //CAShapeLayer *rippleLayer;
 }
 
 // the easiest initializing way
@@ -70,7 +80,7 @@
   self.isRippleEnabled = YES;
   self.isBounceEnabled = YES;
   self.rippleFillColor = [UIColor blueColor];
-  bounceOffset = 3.0f;
+  self.bounceOffset = 3.0f;
   
   CGRect frame;
   CGRect trackFrame = CGRectZero;
@@ -137,8 +147,8 @@
   
   [self addSubview:self.switchThumb];
   
-  thumbOnPosition = self.frame.size.width - self.switchThumb.frame.size.width;
-  thumbOffPosition = self.switchThumb.frame.origin.x;
+  self.thumbOnPosition = self.frame.size.width - self.switchThumb.frame.size.width;
+  self.thumbOffPosition = self.switchThumb.frame.origin.x;
   
   // Set thumb's initial position from state property
   switch (state) {
@@ -146,7 +156,7 @@
       self.isOn = YES;
       self.switchThumb.backgroundColor = self.thumbOnTintColor;
       CGRect thumbFrame = self.switchThumb.frame;
-      thumbFrame.origin.x = thumbOnPosition;
+      thumbFrame.origin.x = self.thumbOnPosition;
       self.switchThumb.frame = thumbFrame;
       break;
       
@@ -236,10 +246,10 @@
   
   // Set bounce value, 3.0 if enabled and none for disabled
   if (self.isBounceEnabled == YES) {
-    bounceOffset = 3.0f;
+    self.bounceOffset = 3.0f;
   }
   else {
-    bounceOffset = 0.0f;
+    self.bounceOffset = 0.0f;
   }
 }
 
@@ -335,12 +345,13 @@
 - (void)changeThumbStateONwithAnimation
 {
   // switch movement animation
+    __weak __typeof(self) wself = self;
   [UIView animateWithDuration:0.15f
                         delay:0.05f
                       options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
                      CGRect thumbFrame = self.switchThumb.frame;
-                     thumbFrame.origin.x = thumbOnPosition+bounceOffset;
+                     thumbFrame.origin.x = wself.thumbOnPosition+wself.bounceOffset;
                      self.switchThumb.frame = thumbFrame;
                      if (self.isEnabled == YES) {
                        self.switchThumb.backgroundColor = self.thumbOnTintColor;
@@ -366,7 +377,7 @@
                                       animations:^{
                                         // Bounce to the position
                                         CGRect thumbFrame = self.switchThumb.frame;
-                                        thumbFrame.origin.x = thumbOnPosition;
+                                        thumbFrame.origin.x = wself.thumbOnPosition;
                                         self.switchThumb.frame = thumbFrame;
                                       }
                                       completion:^(BOOL finished){
@@ -377,13 +388,14 @@
 
 - (void)changeThumbStateOFFwithAnimation
 {
+    __weak __typeof(self) wself = self;
   // switch movement animation
   [UIView animateWithDuration:0.15f
                         delay:0.05f
                       options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
                      CGRect thumbFrame = self.switchThumb.frame;
-                     thumbFrame.origin.x = thumbOffPosition-bounceOffset;
+                     thumbFrame.origin.x = wself.thumbOffPosition-wself.bounceOffset;
                      self.switchThumb.frame = thumbFrame;
                      if (self.isEnabled == YES) {
                        self.switchThumb.backgroundColor = self.thumbOffTintColor;
@@ -409,7 +421,7 @@
                                       animations:^{
                                         // Bounce to the position
                                         CGRect thumbFrame = self.switchThumb.frame;
-                                        thumbFrame.origin.x = thumbOffPosition;
+                                        thumbFrame.origin.x = wself.thumbOffPosition;
                                         self.switchThumb.frame = thumbFrame;
                                       }
                                       completion:^(BOOL finished){
@@ -422,7 +434,7 @@
 - (void)changeThumbStateONwithoutAnimation
 {
   CGRect thumbFrame = self.switchThumb.frame;
-  thumbFrame.origin.x = thumbOnPosition;
+  thumbFrame.origin.x = self.thumbOnPosition;
   self.switchThumb.frame = thumbFrame;
   if (self.isEnabled == YES) {
     self.switchThumb.backgroundColor = self.thumbOnTintColor;
@@ -444,7 +456,7 @@
 - (void)changeThumbStateOFFwithoutAnimation
 {
   CGRect thumbFrame = self.switchThumb.frame;
-  thumbFrame.origin.x = thumbOffPosition;
+  thumbFrame.origin.x = self.thumbOffPosition;
   self.switchThumb.frame = thumbFrame;
   if (self.isEnabled == YES) {
     self.switchThumb.backgroundColor = self.thumbOffTintColor;
@@ -479,15 +491,15 @@
   UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:rippleFrame cornerRadius:self.switchThumb.layer.cornerRadius*2];
   
   // Set ripple layer attributes
-  rippleLayer = [CAShapeLayer layer];
-  rippleLayer.path = path.CGPath;
-  rippleLayer.frame = rippleFrame;
-  rippleLayer.opacity = 0.2;
-  rippleLayer.strokeColor = [UIColor clearColor].CGColor;
-  rippleLayer.fillColor = self.rippleFillColor.CGColor;
-  rippleLayer.lineWidth = 0;
+  self.rippleLayer = [CAShapeLayer layer];
+  self.rippleLayer.path = path.CGPath;
+  self.rippleLayer.frame = rippleFrame;
+  self.rippleLayer.opacity = 0.2;
+  self.rippleLayer.strokeColor = [UIColor clearColor].CGColor;
+  self.rippleLayer.fillColor = self.rippleFillColor.CGColor;
+  self.rippleLayer.lineWidth = 0;
   //  NSLog(@"Ripple origin pos: %@", NSStringFromCGRect(circleShape.frame));
-  [self.switchThumb.layer insertSublayer:rippleLayer below:self.switchThumb.layer];
+  [self.switchThumb.layer insertSublayer:self.rippleLayer below:self.switchThumb.layer];
   //    [self.layer insertSublayer:circleShape above:self.switchThumb.layer];
 }
 
@@ -495,18 +507,19 @@
 - (void)animateRippleEffect
 {
   // Create ripple layer
-  if ( rippleLayer == nil) {
+  if ( self.rippleLayer == nil) {
     [self initializeRipple];
   }
   
   // Animation begins from here
-  rippleLayer.opacity = 0.0;
+  self.rippleLayer.opacity = 0.0;
   [CATransaction begin];
   
   //remove layer after animation completed
+    __weak __typeof(self) wself = self;
   [CATransaction setCompletionBlock:^{
-    [rippleLayer removeFromSuperlayer];
-    rippleLayer = nil;
+    [wself.rippleLayer removeFromSuperlayer];
+    wself.rippleLayer = nil;
   }];
   
   // Scale ripple to the modelate size
@@ -524,7 +537,7 @@
   animation.animations = @[scaleAnimation, alphaAnimation];
   animation.duration = 0.4f;
   animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-  [rippleLayer addAnimation:animation forKey:nil];
+  [self.rippleLayer addAnimation:animation forKey:nil];
   
   [CATransaction commit];
   // End of animation, then remove ripple layer
@@ -554,7 +567,7 @@
   animation.animations = @[scaleAnimation, alphaAnimation];
   animation.duration = 0.4f;
   animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-  [rippleLayer addAnimation:animation forKey:nil];
+  [self.rippleLayer addAnimation:animation forKey:nil];
   
   [CATransaction commit];
   //  NSLog(@"Ripple end pos: %@", NSStringFromCGRect(circleShape.frame));
@@ -620,8 +633,8 @@
   
   thumbFrame.origin.x += dX;
   //Make sure it's within two bounds
-  thumbFrame.origin.x = MIN(thumbFrame.origin.x,thumbOnPosition);
-  thumbFrame.origin.x = MAX(thumbFrame.origin.x,thumbOffPosition);
+  thumbFrame.origin.x = MIN(thumbFrame.origin.x,self.thumbOnPosition);
+  thumbFrame.origin.x = MAX(thumbFrame.origin.x,self.thumbOffPosition);
   
   //Set the thumb's new frame if need to
   if(thumbFrame.origin.x != btn.frame.origin.x) {

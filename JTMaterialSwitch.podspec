@@ -11,11 +11,11 @@ Pod::Spec.new do |s|
    With this library, you can easily implement material design switch to your app. 
                        DESC
 
-  s.homepage         = "https://github.com/JunichiT/JTMaterialSwitch"
-  s.screenshots     = "https://raw.githubusercontent.com/JunichiT/JTMaterialSwitch/master/Docs/switches.gif"
+  s.homepage         = "https://github.com/ashayk/JTMaterialSwitch"
+  s.screenshots     = "https://raw.githubusercontent.com/ashayk/JTMaterialSwitch/master/Docs/switches.gif"
   s.license          = 'MIT'
-  s.author           = { "Junichi Tsurukawa" => "j.tsurukawa@gmail.com" }
-  s.source           = { :git => "https://github.com/JunichiT/JTMaterialSwitch.git", :tag => s.version.to_s }
+  s.author           = { "Alex Shaykevich" => "ashayk1@yahoo.com" }
+  s.source           = { :git => "https://github.com/ashayk/JTMaterialSwitch.git", :tag => s.version.to_s }
 
   s.platform     = :ios, '7.0'
   s.requires_arc = true
